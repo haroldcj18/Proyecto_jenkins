@@ -32,7 +32,17 @@ pipeline {
     steps {
         withSonarQubeEnv("${SONARQUBE}") {
             withCredentials([string(credentialsId: 'SONAR_TOKEN_ID', variable: 'SONAR_TOKEN')]) {
-                bat 'npx sonar-scanner -Dsonar.projectKey=pokemundo -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=%SONAR_TOKEN%'
+                // Verifica que el token se inyecta
+                bat 'echo TOKEN: %SONAR_TOKEN%'
+                
+                // Ejecuta el análisis
+                bat """
+                    npx sonar-scanner ^
+                    -Dsonar.projectKey=pokemundo ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=http://localhost:9000 ^
+                    -Dsonar.login=%SONAR_TOKEN%
+                """
             }
         }
     }
