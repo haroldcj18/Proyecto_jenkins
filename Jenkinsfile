@@ -32,11 +32,7 @@ pipeline {
     steps {
         withSonarQubeEnv("${SONARQUBE}") {
             withCredentials([string(credentialsId: 'SONAR_TOKEN_ID', variable: 'SONAR_TOKEN')]) {
-                bat """npx sonar-scanner ^
-                    -Dsonar.projectKey=pokemundo ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.host.url=http://localhost:9000 ^
-                    -Dsonar.login=%SONAR_TOKEN%"""
+                bat 'npx sonar-scanner -Dsonar.projectKey=pokemundo -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=%SONAR_TOKEN%'
             }
         }
     }
