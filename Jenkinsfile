@@ -22,7 +22,7 @@ pipeline {
             }
         }
 
-            stage('Ejecutar Pruebas') {
+        stage('Ejecutar Pruebas') {
             steps {
                 bat 'npm test || echo ⚠️ No hay pruebas definidas o fallaron.'
             }
@@ -52,7 +52,6 @@ pipeline {
             }
         }
     }
-    
 
     post {
         success {
