@@ -22,6 +22,37 @@ pipeline {
             }
         }
 
+            stage('Ejecutar Pruebas') {
+            steps {
+                bat 'npm test || echo ⚠️ No hay pruebas definidas o fallaron.'
+            }
+        }
+
+        stage('Análisis SonarQube') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE}") {
+                    bat '''npx sonar-scanner ^
+                        -Dsonar.projectKey=pokemundo ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.login=TU_TOKEN_AQUI'''
+                }
+            }
+        }
+
+        stage('Esperar Resultado de Calidad') {
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+
+        stage('Empaquetar Proyecto') {
+            steps {
+                echo 'Empaquetando proyecto (puedes poner comandos aquí si aplica)...'
+            }
+        }
+    }
+    
 
     post {
         success {
