@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    triggers {
-        cron('*/1 * * * *') // Ejecuta cada minuto
-    }
-
     environment {
         SONARQUBE = 'SonarQubeServer' // Nombre del servidor Sonar configurado en Jenkins
     }
