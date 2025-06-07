@@ -32,8 +32,8 @@ pipeline {
     steps {
         withSonarQubeEnv("${SONARQUBE}") {
             withCredentials([string(credentialsId: 'SONAR_TOKEN_ID', variable: 'SONAR_TOKEN')]) {
-                // Verifica que el token se inyecta
-                bat 'echo TOKEN: %SONAR_TOKEN%'
+                // Verifica si el token se está inyectando
+                bat 'echo SONAR_TOKEN: %SONAR_TOKEN%'
                 
                 // Ejecuta el análisis
                 bat """
@@ -47,6 +47,7 @@ pipeline {
         }
     }
 }
+
 
 
 
