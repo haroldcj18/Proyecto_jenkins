@@ -1,6 +1,7 @@
 pipeline {
     agent any
 
+
     environment {
         SONARQUBE = 'SonarQubeServer' // Nombre del servidor Sonar configurado en Jenkins
     }
@@ -20,18 +21,23 @@ pipeline {
 
         stage('Ejecutar Pruebas') {
             steps {
-                bat 'npm test || echo ⚠️ No hay pruebas definidas o fallaron.'
+                // Puedes personalizar el script si tienes pruebas definidas
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    bat 'npm test'
+                }
             }
         }
 
         stage('Análisis SonarQube') {
             steps {
                 withSonarQubeEnv("${SONARQUBE}") {
-                    bat '''npx sonar-scanner ^
-                        -Dsonar.projectKey=pokemundo ^
-                        -Dsonar.sources=. ^
-                        -Dsonar.host.url=http://localhost:9000 ^
-                        -Dsonar.login=TU_TOKEN_AQUI'''
+                    withCredentials([string(credentialsId: 'SONAR_TOKEN_ID', variable: 'SONAR_TOKEN')]) {
+                        bat """npx sonar-scanner ^
+                            -Dsonar.projectKey=pokemundo ^
+                            -Dsonar.sources=. ^
+                            -Dsonar.host.url=http://localhost:9000 ^
+                            -Dsonar.login=%SONAR_TOKEN%"""
+                    }
                 }
             }
         }
@@ -42,9 +48,20 @@ pipeline {
             }
         }
 
+        stage('Desplegar en servidor de pruebas') {
+            steps {
+                echo 'Iniciando servidor Node.js en segundo plano...'
+                // En Windows, abre una nueva terminal minimizada para no bloquear el pipeline
+                bat 'start /min cmd /c "npm start"'
+                sleep time: 10, unit: 'SECONDS' // Espera a que el servidor levante
+                echo 'Servidor de pruebas corriendo en http://localhost:3000'
+            }
+        }
+
         stage('Empaquetar Proyecto') {
             steps {
-                echo 'Empaquetando proyecto (puedes poner comandos aquí si aplica)...'
+                echo 'Empaquetando proyecto (si aplica)...'
+                // Puedes poner aquí npm run build si tienes una etapa de build
             }
         }
     }
