@@ -64,7 +64,7 @@ pipeline {
                  body: "La integración continua finalizó correctamente."
         }
         failure {
-            mail to: 'tucorreo@ejemplo.com',
+            mail to: 'harold_cortes82172@elpoli.edu.co',
                  subject: "❌ Falló el pipeline - Pokemundo",
                  body: "Revisa Jenkins para más detalles del error."
         }
