@@ -29,18 +29,19 @@ pipeline {
         }
 
         stage('Análisis SonarQube') {
-            steps {
-                withSonarQubeEnv("${SONARQUBE}") {
-                    withCredentials([string(credentialsId: 'SONAR_TOKEN_ID', variable: 'SONAR_TOKEN')]) {
-                        bat """npx sonar-scanner ^
-                            -Dsonar.projectKey=pokemundo ^
-                            -Dsonar.sources=. ^
-                            -Dsonar.host.url=http://localhost:9000 ^
-                            -Dsonar.login=sqa_8b935c5388db373f70ed71e179c0c86e3c8a9211
-                    }
-                }
+    steps {
+        withSonarQubeEnv("${SONARQUBE}") {
+            withCredentials([string(credentialsId: 'SONAR_TOKEN_ID', variable: 'SONAR_TOKEN')]) {
+                bat """npx sonar-scanner ^
+                    -Dsonar.projectKey=pokemundo ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=http://localhost:9000 ^
+                    -Dsonar.login=${sqa_8b935c5388db373f70ed71e179c0c86e3c8a9211}"""
             }
         }
+    }
+}
+
 
         stage('Esperar Resultado de Calidad') {
             steps {
