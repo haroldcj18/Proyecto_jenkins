@@ -1,24 +1,68 @@
 pipeline {
     agent any
 
+    triggers {
+        cron('*/1 * * * *') // Ejecuta cada minuto
+    }
+
+    environment {
+        SONARQUBE = 'SonarQubeServer' // Nombre del servidor Sonar configurado en Jenkins
+    }
+
     stages {
-        stage('Build') {
+        stage('Clonar Repositorio') {
             steps {
-                echo 'Compilando el proyecto Jenkins...'
+                git url: 'https://github.com/haroldcj18/pokemundo.git', branch: 'main'
             }
         }
-        stage('Test') {
+
+        stage('Instalar Dependencias') {
             steps {
-                echo 'Ejecutando pruebas...'
+                sh 'npm install'
+            }
+        }
+
+        stage('Ejecutar Pruebas') {
+            steps {
+                sh 'npm test || echo "⚠️ No hay pruebas definidas o fallaron."'
+            }
+        }
+
+        stage('Análisis SonarQube') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE}") {
+                    sh 'npx sonar-scanner \
+                        -Dsonar.projectKey=pokemundo \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.login=TU_TOKEN_AQUI'
+                }
+            }
+        }
+
+        stage('Esperar Resultado de Calidad') {
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+
+        stage('Empaquetar Proyecto') {
+            steps {
+                echo 'Empaquetando proyecto (puedes poner comandos aquí si aplica)...'
             }
         }
     }
+
     post {
         success {
-            echo '🎉 Pipeline ejecutado exitosamente.'
+            mail to: 'harold_cortes82172@elpoli.edu.co',
+                subject: "✅ Pipeline exitoso - Pokemundo",
+                body: "La integración continua finalizó correctamente."
         }
         failure {
-            echo '💥 Falló el pipeline.'
+            mail to: 'tucorreo@ejemplo.com',
+                subject: "❌ Falló el pipeline - Pokemundo",
+                body: "Revisa Jenkins para más detalles del error."
         }
     }
 }
