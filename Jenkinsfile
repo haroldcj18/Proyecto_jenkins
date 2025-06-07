@@ -1,16 +1,12 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "NodeJS"
-    }
-
     triggers {
         cron('*/1 * * * *') // Ejecuta cada minuto
     }
 
     environment {
-        SONARQUBE = 'SonarQubeServer'
+        SONARQUBE = 'SonarQubeServer' // Nombre del servidor Sonar configurado en Jenkins
     }
 
     stages {
@@ -35,11 +31,11 @@ pipeline {
         stage('Análisis SonarQube') {
             steps {
                 withSonarQubeEnv("${SONARQUBE}") {
-                    bat 'npx sonar-scanner ^
+                    bat '''npx sonar-scanner ^
                         -Dsonar.projectKey=pokemundo ^
                         -Dsonar.sources=. ^
                         -Dsonar.host.url=http://localhost:9000 ^
-                        -Dsonar.login=TU_TOKEN_AQUI'
+                        -Dsonar.login=TU_TOKEN_AQUI'''
                 }
             }
         }
@@ -52,7 +48,7 @@ pipeline {
 
         stage('Empaquetar Proyecto') {
             steps {
-                echo 'Empaquetando proyecto...'
+                echo 'Empaquetando proyecto (puedes poner comandos aquí si aplica)...'
             }
         }
     }
@@ -60,13 +56,13 @@ pipeline {
     post {
         success {
             mail to: 'harold_cortes82172@elpoli.edu.co',
-                 subject: "✅ Pipeline exitoso - Pokemundo",
-                 body: "La integración continua finalizó correctamente."
+                subject: "✅ Pipeline exitoso - Pokemundo",
+                body: "La integración continua finalizó correctamente."
         }
         failure {
-            mail to: 'harold_cortes82172@elpoli.edu.co',
-                 subject: "❌ Falló el pipeline - Pokemundo",
-                 body: "Revisa Jenkins para más detalles del error."
+            mail to: 'tucorreo@ejemplo.com',
+                subject: "❌ Falló el pipeline - Pokemundo",
+                body: "Revisa Jenkins para más detalles del error."
         }
     }
 }
