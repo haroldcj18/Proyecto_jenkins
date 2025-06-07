@@ -18,24 +18,24 @@ pipeline {
 
         stage('Instalar Dependencias') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Ejecutar Pruebas') {
             steps {
-                sh 'npm test || echo "⚠️ No hay pruebas definidas o fallaron."'
+                bat 'npm test || echo ⚠️ No hay pruebas definidas o fallaron.'
             }
         }
 
         stage('Análisis SonarQube') {
             steps {
                 withSonarQubeEnv("${SONARQUBE}") {
-                    sh 'npx sonar-scanner \
-                        -Dsonar.projectKey=pokemundo \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.login=TU_TOKEN_AQUI'
+                    bat '''npx sonar-scanner ^
+                        -Dsonar.projectKey=pokemundo ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.login=TU_TOKEN_AQUI'''
                 }
             }
         }
